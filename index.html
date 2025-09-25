@@ -8,10 +8,10 @@
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Google Fonts: Poppins -->
+    <!-- Google Fonts: Poppins & Fira Code -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -23,97 +23,159 @@
             --light-slate: #ccd6f6;
             --slate: #8892b0;
             --accent: #64ffda;
-            --x: 50%; /* For mouse follower */
-            --y: 50%; /* For mouse follower */
+            --font-sans: 'Poppins', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+            --x: 50%;
+            --y: 50%;
         }
         
+        html { cursor: none; }
+
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: var(--font-sans);
             background-color: var(--dark-navy);
             color: var(--light-slate);
-            /* === NEW: Animated Gradient Background === */
             background-image: radial-gradient(circle at 25% 25%, rgba(100, 255, 218, 0.05), transparent 30%),
                               radial-gradient(circle at 75% 75%, rgba(4, 32, 58, 0.5), transparent 40%);
         }
         
-        /* === NEW: Interactive Mouse Light Effect === */
         body::before {
             content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
             pointer-events: none;
             z-index: 10;
-            background: radial-gradient(
-                circle 400px at var(--x) var(--y),
-                rgba(100, 255, 218, 0.08),
-                transparent 80%
-            );
-            transition: background 0.1s ease-out;
+            background: radial-gradient( circle 400px at var(--x) var(--y), rgba(100, 255, 218, 0.08), transparent 80% );
         }
 
         .accent-color { color: var(--accent); }
-        .bg-accent { background-color: var(--accent); }
-        .btn-primary {
-            @apply border border-cyan-400 text-cyan-400 px-6 py-3 rounded-md hover:bg-cyan-400 hover:bg-opacity-10 transition-all duration-300 transform hover:scale-105;
-        }
+        .font-mono { font-family: var(--font-mono); }
+        .btn-primary { @apply border border-cyan-400 text-cyan-400 px-6 py-3 rounded-md hover:bg-cyan-400 hover:bg-opacity-10 transition-all duration-300 transform hover:scale-105; }
+        .btn-secondary { @apply border border-slate-500 text-slate-400 px-6 py-3 rounded-md hover:bg-slate-500 hover:bg-opacity-10 transition-all duration-300 transform hover:scale-105; }
+        
         .glass-card {
-            background: rgba(23, 42, 69, 0.7); /* Slightly transparent navy */
+            background: rgba(23, 42, 69, 0.7);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(100, 255, 218, 0.2);
             border-radius: 12px;
             transition: transform 0.3s ease-out, box-shadow 0.3s ease-out;
         }
-        .glass-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 30px -15px rgba(2,12,27,0.7);
+        /* === NEW: 3D Tilt Effect on Cards === */
+        .tilt-card {
+            transform-style: preserve-3d;
         }
-        .nav-link {
-            @apply text-slate-300 hover:text-cyan-400 transition-colors duration-300;
-        }
+        .tilt-card:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 20px 40px -15px rgba(2,12,27,0.7); }
+        
+        .nav-link { @apply text-slate-300 hover:text-cyan-400 transition-colors duration-300 font-mono; }
+        
         .reveal {
             opacity: 0;
             transform: translateY(50px);
             transition: opacity 0.8s cubic-bezier(0.645, 0.045, 0.355, 1), transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
             transition-delay: 0.1s;
         }
-        .reveal.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
         
-        /* === NEW: Typewriter Effect Styles === */
-        .typewriter-cursor {
-            display: inline-block;
-            width: 3px;
-            height: 1em;
-            background-color: var(--accent);
-            animation: blink 0.7s infinite;
-            margin-left: 4px;
+        #cursor-dot, #cursor-outline {
+            position: fixed; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.2s ease-out, width 0.3s ease-out, height 0.3s ease-out;
         }
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
+        #cursor-dot { width: 8px; height: 8px; background-color: var(--accent); }
+        #cursor-outline { width: 40px; height: 40px; border: 2px solid var(--accent); opacity: 0.5; }
+        #cursor-outline.hover { transform: translate(-50%, -50%) scale(1.5); background-color: rgba(100, 255, 218, 0.1); }
+
+        .sidebar {
+            width: 40px; position: fixed; bottom: 0; z-index: 30;
+            opacity: 0; transform: translateY(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            transition-delay: 2s; /* Delay to appear after preloader */
         }
+        .sidebar.visible { opacity: 1; transform: translateY(0); }
+        .sidebar::after { content: ''; display: block; width: 1px; height: 90px; margin: 0 auto; background-color: var(--slate); }
+        .left-sidebar { left: 40px; right: auto; }
+        .right-sidebar { right: 40px; left: auto; }
+        .sidebar a { writing-mode: vertical-rl; letter-spacing: 0.1em; }
+
+        /* === UPDATED: Preloader back to Text-based === */
+        #preloader {
+            position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: var(--dark-navy);
+            z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+            transition: opacity 0.5s ease-out;
+        }
+        #preloader.loaded { opacity: 0; pointer-events: none; }
+        #preloader .logo {
+            font-family: var(--font-mono);
+            font-size: 2.5rem;
+            color: var(--accent);
+            font-weight: 500;
+            opacity: 0;
+            animation: fadeInOut 2.5s ease-in-out forwards; /* Longer duration */
+        }
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+
+        #scrollTopBtn {
+            position: fixed; bottom: 20px; right: 20px;
+            background-color: rgba(100, 255, 218, 0.1);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+            width: 50px; height: 50px;
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0;
+            transform: translateY(100px);
+            transition: opacity 0.3s, transform 0.3s;
+            z-index: 100;
+        }
+        #scrollTopBtn.visible { opacity: 1; transform: translateY(0); }
     </style>
 </head>
-<body class="leading-relaxed">
+<body class="leading-relaxed opacity-0 transition-opacity duration-500">
 
-    <!-- Header / Navigation -->
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="logo">BBJ</div>
+    </div>
+
+    <div id="cursor-dot"></div>
+    <div id="cursor-outline"></div>
+    <div class="left-sidebar sidebar hidden md:block">
+        <div class="flex flex-col items-center space-y-6">
+            <a href="https://github.com/bihindubulanjay" target="_blank" class="text-slate-400 hover:accent-color transition-colors transform hover:-translate-y-1"><i class="fab fa-github text-2xl"></i></a>
+            <a href="#" target="_blank" class="text-slate-400 hover:accent-color transition-colors transform hover:-translate-y-1"><i class="fab fa-linkedin text-2xl"></i></a>
+            <a href="#" target="_blank" class="text-slate-400 hover:accent-color transition-colors transform hover:-translate-y-1"><i class="fab fa-facebook text-2xl"></i></a>
+        </div>
+    </div>
+    <div class="right-sidebar sidebar hidden md:block">
+        <div class="flex flex-col items-center space-y-6">
+             <a href="mailto:developer.rpbbj.mail@gmail.com" class="font-mono text-sm text-slate-400 hover:accent-color transition-colors tracking-widest transform hover:-translate-y-1">
+                developer.rpbbj.mail@gmail.com
+            </a>
+        </div>
+    </div>
+
     <header class="fixed w-full top-0 z-50 transition-all duration-300" id="header">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="text-2xl font-bold accent-color">BBJ</a>
-            <div class="hidden md:flex items-center space-x-8">
-                <a href="#about" class="nav-link">About Me</a>
+            <a href="#" class="text-2xl font-bold accent-color font-mono">BBJ</a>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#about" class="nav-link">About</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#skills" class="nav-link">Skills</a>
+                <a href="#journey" class="nav-link">Journey</a>
                 <a href="#projects" class="nav-link">Projects</a>
                 <a href="#contact" class="nav-link">Contact</a>
             </div>
-            <a href="https://github.com/bihindubulanjay" target="_blank" class="hidden md:block btn-primary">
-                GitHub Profile
-            </a>
         </nav>
     </header>
 
@@ -122,194 +184,207 @@
         <!-- Hero Section -->
         <section id="home" class="min-h-screen flex items-center reveal">
             <div>
-                <span class="accent-color text-lg font-medium">Hi, my name is</span>
+                <span class="accent-color text-lg font-mono">Hi, my name is</span>
                 <h1 class="text-4xl md:text-7xl font-bold text-slate-100 mt-4">Bihindu Bulan Jayathilaka.</h1>
-                <!-- === UPDATED: Target for Typewriter Effect === -->
-                <h2 class="text-4xl md:text-7xl font-bold text-slate-400 mt-2" id="typewriter-target">
-                    I build things for Android.
-                    <span class="typewriter-cursor"></span>
-                </h2>
+                <h2 class="text-4xl md:text-7xl font-bold text-slate-400 mt-2">I build things for Android.</h2>
                 <p class="mt-6 max-w-2xl text-slate-400">
                     I'm a passionate self-taught developer and a student specializing in creating modern, intuitive mobile applications with Kotlin. Currently focused on building an IoT-based robotic rover control app.
                 </p>
-                <div class="mt-8 space-x-4">
-                    <a href="#projects" class="btn-primary text-lg">Check out my projects!</a>
+                <div class="mt-8 flex items-center space-x-4">
+                    <a href="#projects" class="btn-primary text-lg">My Projects</a>
+                    <!-- === NEW: Download CV Button === -->
+                    <a href="./assets/Bihindu_Jayathilaka_CV.pdf" download class="btn-secondary text-lg">Download CV</a>
                 </div>
             </div>
         </section>
 
         <!-- About Me Section -->
-        <section id="about" class="py-20 md:py-32 reveal">
-            <h2 class="text-3xl font-bold text-slate-100 flex items-center">
-                <span class="accent-color mr-3 text-2xl">01.</span> About Me
+        <section id="about" class="py-20 md:py-24 reveal">
+             <h2 class="text-3xl font-bold text-slate-100 flex items-center">
+                About Me
                 <span class="h-px bg-slate-700 flex-grow ml-4"></span>
             </h2>
             <div class="mt-8 grid grid-cols-1 md:grid-cols-5 gap-10 items-center">
                 <div class="md:col-span-3 text-slate-400 space-y-4">
-                    <p>
-                        Hello! I'm Bihindu, an aspiring mobile developer based in Sri Lanka with a strong passion for building applications that solve real-world problems. My journey into programming started with a simple curiosity, which has now grown into a full-fledged dedication to mastering Android development.
-                    </p>
-                    <p>
-                        I enjoy the challenge of turning complex ideas into functional, user-friendly mobile experiences. My primary focus is on the Android ecosystem, using modern technologies to create robust and scalable applications.
-                    </p>
-                    <p>Here are a few technologies I’ve been working with recently:</p>
-                    <ul class="grid grid-cols-2 gap-2 list-inside">
-                        <li class="flex items-center"><i class="fa-solid fa-caret-right accent-color mr-2"></i>Kotlin</li>
-                        <li class="flex items-center"><i class="fa-solid fa-caret-right accent-color mr-2"></i>Jetpack Compose</li>
-                        <li class="flex items-center"><i class="fa-solid fa-caret-right accent-color mr-2"></i>Firebase (Firestore)</li>
-                        <li class="flex items-center"><i class="fa-solid fa-caret-right accent-color mr-2"></i>Bluetooth & IoT</li>
-                        <li class="flex items-center"><i class="fa-solid fa-caret-right accent-color mr-2"></i>Android Studio</li>
-                        <li class="flex items-center"><i class="fa-solid fa-caret-right accent-color mr-2"></i>Flutter (Dart)</li>
-                    </ul>
+                    <p>Hello! I'm Bihindu, an aspiring mobile developer based in Sri Lanka with a strong passion for building applications that solve real-world problems. My journey into programming started with a simple curiosity, which has now grown into a full-fledged dedication to mastering Android development.</p>
+                    <p>I enjoy the challenge of turning complex ideas into functional, user-friendly mobile experiences. My primary focus is on the Android ecosystem, using modern technologies to create robust and scalable applications.</p>
                 </div>
                 <div class="md:col-span-2 flex justify-center">
-                    <div class="w-64 h-64 rounded-full border-2 border-cyan-400 p-2 transform transition-transform duration-500 hover:scale-105">
-                        <!-- ඔබගේ ඡායාරූපයක් මෙතනට දාන්න. 'your_photo.jpg' වෙනුවට file name එක දෙන්න. -->
-                        <img src="https://placehold.co/256x256/0a192f/64ffda?text=BBJ" alt="Bihindu Bulan Jayathilaka" class="w-full h-full object-cover rounded-full">
+                    <div class="w-64 h-64 rounded-lg border-2 border-cyan-400 p-2 transform transition-transform duration-500 hover:scale-105 relative group">
+                        <img src="https://placehold.co/256x256/0a192f/64ffda?text=BBJ" alt="Bihindu Bulan Jayathilaka" class="w-full h-full object-cover rounded-md">
+                        <div class="absolute inset-0 bg-cyan-400 bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 rounded-md"></div>
                     </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- === NEW: Services Section === -->
+        <section id="services" class="py-20 md:py-24 reveal">
+            <h2 class="text-3xl font-bold text-slate-100 flex items-center">
+                What I Offer
+                <span class="h-px bg-slate-700 flex-grow ml-4"></span>
+            </h2>
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-card tilt-card p-6 text-center reveal">
+                    <i class="fa-brands fa-android text-5xl accent-color mb-4"></i>
+                    <h3 class="text-xl font-bold text-slate-100 mb-2">Native Android Apps</h3>
+                    <p class="text-slate-400 text-sm">Building high-performance, feature-rich applications specifically for the Android platform using Kotlin and the latest Jetpack libraries.</p>
+                </div>
+                <div class="glass-card tilt-card p-6 text-center reveal" style="transition-delay: 0.2s;">
+                    <i class="fa-solid fa-drafting-compass text-5xl accent-color mb-4"></i>
+                    <h3 class="text-xl font-bold text-slate-100 mb-2">UI/UX Design</h3>
+                    <p class="text-slate-400 text-sm">Designing intuitive and beautiful user interfaces with Jetpack Compose, focusing on creating a seamless and enjoyable user experience.</p>
+                </div>
+                <div class="glass-card tilt-card p-6 text-center reveal" style="transition-delay: 0.4s;">
+                    <i class="fa-solid fa-microchip text-5xl accent-color mb-4"></i>
+                    <h3 class="text-xl font-bold text-slate-100 mb-2">IoT Integration</h3>
+                    <p class="text-slate-400 text-sm">Connecting mobile applications with hardware devices like ESP32 via Bluetooth and cloud platforms like Firebase for real-time control.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section id="skills" class="py-20 md:py-24 reveal">
+            <h2 class="text-3xl font-bold text-slate-100 flex items-center">
+                Skills & Technologies
+                <span class="h-px bg-slate-700 flex-grow ml-4"></span>
+            </h2>
+            <div class="mt-8 text-slate-400">
+                <p class="max-w-3xl">Here are some of the key technologies and tools I work with to bring my ideas to life.</p>
+                <div class="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 text-center">
+                    <div class="glass-card tilt-card p-4 flex flex-col items-center justify-center space-y-2 reveal" style="transition-delay: 0.1s;"><i class="fa-brands fa-android text-5xl text-green-400"></i><span class="font-mono text-sm">Android Native</span></div>
+                    <div class="glass-card tilt-card p-4 flex flex-col items-center justify-center space-y-2 reveal" style="transition-delay: 0.2s;"><i class="fa-solid fa-k text-5xl text-purple-400"></i><span class="font-mono text-sm">Kotlin</span></div>
+                    <div class="glass-card tilt-card p-4 flex flex-col items-center justify-center space-y-2 reveal" style="transition-delay: 0.3s;"><i class="fa-solid fa-fire text-5xl text-yellow-500"></i><span class="font-mono text-sm">Firebase</span></div>
+                    <div class="glass-card tilt-card p-4 flex flex-col items-center justify-center space-y-2 reveal" style="transition-delay: 0.4s;"><i class="fa-brands fa-git-alt text-5xl text-red-500"></i><span class="font-mono text-sm">Git & GitHub</span></div>
+                    <div class="glass-card tilt-card p-4 flex flex-col items-center justify-center space-y-2 reveal" style="transition-delay: 0.5s;"><i class="fa-brands fa-figma text-5xl text-pink-500"></i><span class="font-mono text-sm">Figma (UI/UX)</span></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Journey Section (Timeline) -->
+        <section id="journey" class="py-20 md:py-24 reveal">
+            <h2 class="text-3xl font-bold text-slate-100 flex items-center">
+                My Journey
+                <span class="h-px bg-slate-700 flex-grow ml-4"></span>
+            </h2>
+            <div class="mt-12 relative">
+                <div class="absolute left-4 top-0 h-full w-0.5 bg-slate-700"></div>
+                <div class="relative pl-12 mb-10 reveal">
+                    <div class="absolute left-0 top-1.5 w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center -translate-x-1/2 border-4 border-navy-dark"><div class="w-3 h-3 bg-accent rounded-full"></div></div>
+                    <p class="font-mono text-accent text-sm">September 2023</p>
+                    <h3 class="text-xl font-bold text-slate-100 mt-1">Started Android Development</h3>
+                    <p class="text-slate-400 mt-2">Began my journey into mobile development, focusing on Kotlin and the fundamentals of the Android SDK.</p>
+                </div>
+                 <div class="relative pl-12 mb-10 reveal">
+                    <div class="absolute left-0 top-1.5 w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center -translate-x-1/2 border-4 border-navy-dark"><div class="w-3 h-3 bg-accent rounded-full"></div></div>
+                    <p class="font-mono text-accent text-sm">January 2024</p>
+                    <h3 class="text-xl font-bold text-slate-100 mt-1">Built First Full App</h3>
+                    <p class="text-slate-400 mt-2">Completed my first fully functional application, solidifying my understanding of activities, layouts, and user interaction.</p>
+                </div>
+                <div class="relative pl-12 reveal">
+                    <div class="absolute left-0 top-1.5 w-8 h-8 bg-slate-700 rounded-full flex items-center justify-center -translate-x-1/2 border-4 border-navy-dark"><div class="w-3 h-3 bg-accent rounded-full"></div></div>
+                    <p class="font-mono text-accent text-sm">June 2024 - Present</p>
+                    <h3 class="text-xl font-bold text-slate-100 mt-1">Launched RoverLink Project</h3>
+                    <p class="text-slate-400 mt-2">Embarked on my most ambitious project yet, integrating IoT hardware with a modern Android app using Jetpack Compose and Firebase.</p>
                 </div>
             </div>
         </section>
 
         <!-- Projects Section -->
-        <section id="projects" class="py-20 md:py-32 reveal">
+        <section id="projects" class="py-20 md:py-24 reveal">
             <h2 class="text-3xl font-bold text-slate-100 flex items-center">
-                <span class="accent-color mr-3 text-2xl">02.</span> My Projects
+                My Projects
                  <span class="h-px bg-slate-700 flex-grow ml-4"></span>
             </h2>
             <div class="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                
-                <!-- Project 1: RoverLink -->
-                <div class="glass-card p-6 flex flex-col justify-between">
+                <div class="glass-card tilt-card p-6 flex flex-col justify-between reveal" style="transition-delay: 0.2s;">
                     <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <i class="fa-solid fa-robot text-3xl accent-color"></i>
-                            <div class="flex space-x-4">
-                                <a href="https://github.com/bihindubulanjay/RoverLink" target="_blank" class="text-slate-400 hover:accent-color transition-colors"><i class="fab fa-github text-2xl"></i></a>
-                                <!-- Play Store link එක ලැබුණු පසු, # වෙනුවට link එක දාන්න -->
-                                <a href="#" target="_blank" class="text-slate-400 hover:accent-color transition-colors"><i class="fab fa-google-play text-2xl"></i></a>
-                            </div>
-                        </div>
+                        <div class="flex justify-between items-center mb-4"><i class="fa-solid fa-robot text-3xl accent-color"></i><div class="flex space-x-4"><a href="https://github.com/bihindubulanjay/RoverLink" target="_blank" class="text-slate-400 hover:accent-color transition-colors"><i class="fab fa-github text-2xl"></i></a><a href="#" target="_blank" class="text-slate-400 hover:accent-color transition-colors"><i class="fab fa-google-play text-2xl"></i></a></div></div>
                         <h3 class="text-xl font-bold text-slate-100 mb-2">RoverLink - Robotic Control App</h3>
-                        <p class="text-slate-400 text-sm">
-                            An advanced Android application to control an IoT-based robotic rover via Bluetooth. Features a live camera feed from an ESP32-CAM, real-time telemetry display, and cloud configuration using Firebase Firestore.
-                        </p>
+                        <p class="text-slate-400 text-sm">An advanced Android application to control an IoT-based robotic rover via Bluetooth. Features a live camera feed from an ESP32-CAM and cloud configuration using Firebase.</p>
                     </div>
-                    <div class="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
-                        <span class="bg-slate-700 px-2 py-1 rounded">Kotlin</span>
-                        <span class="bg-slate-700 px-2 py-1 rounded">Jetpack Compose</span>
-                        <span class="bg-slate-700 px-2 py-1 rounded">Firebase</span>
-                        <span class="bg-slate-700 px-2 py-1 rounded">IoT</span>
-                    </div>
+                    <div class="mt-4 flex flex-wrap gap-2 text-xs text-slate-400 font-mono"><span class="bg-slate-700 px-2 py-1 rounded">Kotlin</span><span class="bg-slate-700 px-2 py-1 rounded">Jetpack Compose</span><span class="bg-slate-700 px-2 py-1 rounded">Firebase</span><span class="bg-slate-700 px-2 py-1 rounded">IoT</span></div>
                 </div>
-
-                <!-- Project 2: Placeholder -->
-                <div class="glass-card p-6 flex flex-col justify-between">
+                <div class="glass-card tilt-card p-6 flex flex-col justify-between reveal" style="transition-delay: 0.4s;">
                     <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <i class="fa-solid fa-folder-open text-3xl accent-color"></i>
-                            <div class="flex space-x-4">
-                                <a href="#" target="_blank" class="text-slate-400 hover:accent-color transition-colors"><i class="fab fa-github text-2xl"></i></a>
-                            </div>
-                        </div>
+                        <div class="flex justify-between items-center mb-4"><i class="fa-solid fa-folder-open text-3xl accent-color"></i><div class="flex space-x-4"><a href="#" target="_blank" class="text-slate-400 hover:accent-color transition-colors"><i class="fab fa-github text-2xl"></i></a></div></div>
                         <h3 class="text-xl font-bold text-slate-100 mb-2">Future Project Title</h3>
-                        <p class="text-slate-400 text-sm">
-                            Description of another cool project you plan to build. You can describe the idea and the technologies you aim to use.
-                        </p>
+                        <p class="text-slate-400 text-sm">Description of another cool project you plan to build. You can describe the idea and the technologies you aim to use.</p>
                     </div>
-                    <div class="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
-                        <span class="bg-slate-700 px-2 py-1 rounded">Flutter</span>
-                        <span class="bg-slate-700 px-2 py-1 rounded">Firebase Auth</span>
-                        <span class="bg-slate-700 px-2 py-1 rounded">Cloud DB</span>
-                    </div>
+                    <div class="mt-4 flex flex-wrap gap-2 text-xs text-slate-400 font-mono"><span class="bg-slate-700 px-2 py-1 rounded">Flutter</span><span class="bg-slate-700 px-2 py-1 rounded">Firebase Auth</span><span class="bg-slate-700 px-2 py-1 rounded">Cloud DB</span></div>
                 </div>
-
-                 <!-- Project 3: Placeholder -->
-                <div class="glass-card p-6 flex flex-col justify-between">
-                    <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <i class="fa-solid fa-folder-open text-3xl accent-color"></i>
-                            <div class="flex space-x-4">
-                                <a href="#" target="_blank" class="text-slate-400 hover:accent-color transition-colors"><i class="fab fa-github text-2xl"></i></a>
-                            </div>
-                        </div>
-                        <h3 class="text-xl font-bold text-slate-100 mb-2">Another Future Project</h3>
-                        <p class="text-slate-400 text-sm">
-                            This is a placeholder for another one of your amazing projects. You can detail your idea here.
-                        </p>
-                    </div>
-                    <div class="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
-                        <span class="bg-slate-700 px-2 py-1 rounded">Technology</span>
-                        <span class="bg-slate-700 px-2 py-1 rounded">Another Tech</span>
-                    </div>
-                </div>
-
             </div>
         </section>
 
         <!-- Contact Section -->
-        <section id="contact" class="py-20 md:py-32 text-center reveal">
-            <h2 class="text-2xl font-bold accent-color">What's Next?</h2>
+        <section id="contact" class="py-20 md:py-24 text-center reveal">
+            <h2 class="text-2xl font-bold accent-color font-mono">What's Next?</h2>
             <h3 class="text-4xl md:text-5xl font-bold text-slate-100 mt-4">Get In Touch</h3>
-            <p class="mt-6 max-w-xl mx-auto text-slate-400">
-                I'm always open to discussing new projects, creative ideas, or opportunities to be part of an amazing team. Whether you have a question or just want to say hi, my inbox is always open!
-            </p>
+            <p class="mt-6 max-w-xl mx-auto text-slate-400">I'm always open to discussing new projects, creative ideas, or opportunities to be part of an amazing team. Whether you have a question or just want to say hi, my inbox is always open!</p>
             <div class="mt-10">
-                <a href="mailto:developer.rpbbj.mail@gmail.com?subject=Message from your Portfolio Website" class="btn-primary text-lg">
-                    Say Hello
-                </a>
+                <a href="mailto:developer.rpbbj.mail@gmail.com?subject=Message from your Portfolio Website" class="btn-primary text-lg">Say Hello</a>
             </div>
         </section>
 
     </main>
 
-    <!-- Footer -->
     <footer class="py-12 text-center reveal">
-        <div class="flex justify-center space-x-6 mb-4">
-            <a href="https://github.com/bihindubulanjay" target="_blank" class="text-slate-400 hover:accent-color transition-colors text-2xl"><i class="fab fa-github"></i></a>
-            <a href="#" target="_blank" class="text-slate-400 hover:accent-color transition-colors text-2xl"><i class="fab fa-linkedin"></i></a>
-            <a href="#" target="_blank" class="text-slate-400 hover:accent-color transition-colors text-2xl"><i class="fab fa-facebook"></i></a>
-        </div>
-        <p class="text-slate-500 text-sm">
+        <p class="text-slate-500 text-sm font-mono">
             Designed & Built by Bihindu Bulan Jayathilaka
         </p>
     </footer>
 
-    <!-- JavaScript for all animations -->
+    <button id="scrollTopBtn" title="Go to top"><i class="fa-solid fa-arrow-up"></i></button>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
 
-            // --- Interactive Mouse Follower Effect ---
-            document.addEventListener('mousemove', e => {
+            const preloader = document.getElementById('preloader');
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    preloader.classList.add('loaded');
+                    document.body.classList.remove('opacity-0');
+                    startAnimations();
+                }, 2500); // Back to original longer duration
+            });
+
+            const cursorDot = document.getElementById('cursor-dot');
+            const cursorOutline = document.getElementById('cursor-outline');
+            window.addEventListener('mousemove', e => {
+                const posX = e.clientX; const posY = e.clientY;
+                cursorDot.style.left = `${posX}px`;
+                cursorDot.style.top = `${posY}px`;
+                cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 500, fill: "forwards" });
                 document.body.style.setProperty('--x', e.clientX + 'px');
                 document.body.style.setProperty('--y', e.clientY + 'px');
             });
+            document.querySelectorAll('a, button, input, .glass-card').forEach(el => {
+                el.addEventListener('mouseover', () => cursorOutline.classList.add('hover'));
+                el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hover'));
+            });
 
-            // --- Smooth scrolling for navigation links ---
+            function startAnimations() {
+                const revealElements = document.querySelectorAll('.reveal');
+                const revealObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            revealObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1 });
+                revealElements.forEach(el => revealObserver.observe(el));
+            }
+
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
-                    document.querySelector(this.getAttribute('href')).scrollIntoView({
-                        behavior: 'smooth'
-                    });
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
                 });
             });
 
-            // --- Reveal elements on scroll animation ---
-            const revealElements = document.querySelectorAll('.reveal');
-            const revealObserver = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
-                    }
-                });
-            }, {
-                threshold: 0.1
-            });
-            revealElements.forEach(el => revealObserver.observe(el));
-
-            // --- Change header background on scroll ---
             const header = document.getElementById('header');
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
             window.addEventListener('scroll', () => {
                 if (window.scrollY > 50) {
                     header.classList.add('bg-opacity-90', 'backdrop-blur-md', 'shadow-lg');
@@ -318,29 +393,29 @@
                     header.classList.remove('bg-opacity-90', 'backdrop-blur-md', 'shadow-lg');
                     header.style.backgroundColor = 'transparent';
                 }
+                if (window.scrollY > 300) { scrollTopBtn.classList.add('visible'); } 
+                else { scrollTopBtn.classList.remove('visible'); }
             });
+            scrollTopBtn.addEventListener('click', () => { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
-            // --- Typewriter Effect ---
-            const typewriterTarget = document.getElementById('typewriter-target');
-            const originalText = "I build things for Android.";
-            typewriterTarget.innerHTML = '<span class="typewriter-cursor"></span>'; // Clear text, keep cursor
-            let i = 0;
-
-            function typeWriter() {
-                if (i < originalText.length) {
-                    typewriterTarget.innerHTML = originalText.substring(0, i + 1) + '<span class="typewriter-cursor"></span>';
-                    i++;
-                    setTimeout(typeWriter, 100);
-                } else {
-                    // Optional: keep cursor blinking
-                }
-            }
-            // Start after a short delay
-            setTimeout(typeWriter, 1500);
-
+            // 3D Tilt Effect
+            const tiltCards = document.querySelectorAll('.tilt-card');
+            tiltCards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const { width, height } = rect;
+                    const rotateX = (y / height - 0.5) * -15; // Max 15 deg rotation
+                    const rotateY = (x / width - 0.5) * 15;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02) translateY(-8px)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1) translateY(0)';
+                });
+            });
         });
     </script>
-
 </body>
 </html>
 
