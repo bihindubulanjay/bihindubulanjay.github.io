@@ -1,4 +1,4 @@
-const CACHE_NAME = 'portfolio-v38';
+const CACHE_NAME = 'portfolio-v39';
 const ASSETS = ['./index.html', './manifest.json', './icon.svg'];
 
 self.addEventListener('install', (e) => {
