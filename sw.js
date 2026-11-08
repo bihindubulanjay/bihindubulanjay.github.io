@@ -1,5 +1,5 @@
-const CACHE_NAME = 'portfolio-v39';
-const ASSETS = ['./index.html', './manifest.json', './icon.svg'];
+const CACHE_NAME = 'portfolio-v40';
+const ASSETS = ['./index.html', './manifest.json', './icon.svg', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', (e) => {
     e.waitUntil(
